@@ -24,7 +24,7 @@ window.FFF_CONFIG = {
   MODE: "live"           // "live" = sitio real: si faltan los valores, muestra "disponible pronto" en vez de la demo
 };
 // Precalienta el servidor mientras la familia lee la portada e inicia sesión (la primera respuesta llega mucho más rápido).
-if (FFF_CONFIG.API_URL) fetch(FFF_CONFIG.API_URL).catch(function () {});
+window.__warm = FFF_CONFIG.API_URL ? fetch(FFF_CONFIG.API_URL).then(function () { return true; }, function () { return false; }) : Promise.resolve(true);
 </script>
 <script id="gsi" src="https://accounts.google.com/gsi/client" async onload="window.__gisLoaded && window.__gisLoaded()"></script>
 <style>
@@ -981,6 +981,8 @@ async function downloadReport(){
 let Demo = null;
 
 initAuth();
+// Si el precalentamiento desde <head> no salió (algunos navegadores lo bloquean durante la carga), se repite una vez.
+window.__warm.then(ok => { if (!ok && !DEMO) fetch(CFG.API_URL).catch(() => {}); });
 })();
 </script>
 <!--FFF:BODY-END-->
