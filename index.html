@@ -7,9 +7,12 @@
 <title>Registro Family Fun Fest</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Registro de asistentes al Family Fun Fest 2026 de Eight Academy.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
+<link rel="preconnect" href="https://accounts.google.com">
+<link rel="preload" as="font" type="font/woff2" href="fonts/nunito-700.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/fredoka-700.woff2" crossorigin>
+<link rel="preload" as="image" href="hero-740.webp" imagesrcset="hero-480.webp 480w, hero-740.webp 740w" imagesizes="(max-width: 880px) 92vw, 520px" fetchpriority="high">
 <script>
 /* =====================================================================
  * CONFIGURACIÓN — completa estos dos valores al desplegar (ver guía).
@@ -18,11 +21,18 @@
 window.FFF_CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycby8IZ74VBjhFFTYIXo1sTgaMp1TL444il3WuQ9ks6NnUC4YFuEj4UGhPPmRb78ifeP2yw/exec",
   GOOGLE_CLIENT_ID: "98394336658-bauol6st117ohls1mvffncui7c3h3ij9.apps.googleusercontent.com",
-  HERO_SRC: "hero.jpg",
   MODE: "live"           // "live" = sitio real: si faltan los valores, muestra "disponible pronto" en vez de la demo
 };
+// Precalienta el servidor mientras la familia lee la portada e inicia sesión (la primera respuesta llega mucho más rápido).
+if (FFF_CONFIG.API_URL) fetch(FFF_CONFIG.API_URL).catch(function () {});
 </script>
+<script id="gsi" src="https://accounts.google.com/gsi/client" async onload="window.__gisLoaded && window.__gisLoaded()"></script>
 <style>
+@font-face{font-family:'Nunito';font-weight:400;font-display:swap;src:url(fonts/nunito-400.woff2) format('woff2')}
+@font-face{font-family:'Nunito';font-weight:700;font-display:swap;src:url(fonts/nunito-700.woff2) format('woff2')}
+@font-face{font-family:'Nunito';font-weight:800;font-display:swap;src:url(fonts/nunito-800.woff2) format('woff2')}
+@font-face{font-family:'Fredoka';font-weight:600;font-display:swap;src:url(fonts/fredoka-600.woff2) format('woff2')}
+@font-face{font-family:'Fredoka';font-weight:700;font-display:swap;src:url(fonts/fredoka-700.woff2) format('woff2')}
 /* Layout: banda de cielo con la imagen del evento + panel; debajo, tarjetas blancas sobre menta.
    Línea gráfica tomada del folleto: encabezados en tarjeta amarilla, círculos numerados de color,
    franja de seis colores en los bordes. */
@@ -102,7 +112,7 @@ img{max-width:100%}
 .topbar{background:var(--sky)}
 .topbar .wrap{display:flex;align-items:center;gap:14px;padding-block:12px;flex-wrap:wrap}
 .topbar img.thumb{width:56px;height:56px;border-radius:14px;border:3px solid var(--surface);object-fit:cover}
-.topbar .t{flex:1;min-width:0}
+.topbar .t{flex:1 1 180px;min-width:0}
 .topbar .t b{font-family:var(--display);font-size:20px;font-weight:700;display:block;line-height:1.1}
 .topbar .t span{font-size:14px;color:var(--ink-2)}
 .who{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:999px;padding:4px 6px 4px 4px;min-width:0;max-width:100%}
@@ -226,6 +236,11 @@ select,.inp{min-height:46px;border-radius:12px;border:2px solid var(--line);back
 .success{text-align:center;display:grid;gap:12px;justify-items:center;padding-top:6px}
 .success .big{width:76px;height:76px;border-radius:50%;background:var(--leaf);color:var(--on-leaf);display:grid;place-items:center}
 .success .big svg{width:40px;height:40px}
+.loader{padding-block:48px 64px}
+.loader-card{max-width:460px;margin:0 auto;background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:32px 24px;display:grid;gap:10px;justify-items:center;text-align:center}
+.loader-card b{font-family:var(--display);font-size:22px;font-weight:600}
+.loader-card small{color:var(--ink-2);font-size:15px}
+.loader-card .spinner{width:44px;height:44px;border-width:5px;color:var(--leaf);margin-bottom:6px}
 .spinner{width:18px;height:18px;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -274,6 +289,8 @@ tr:last-child td{border-bottom:0}
   .card-body{padding:16px}
   .rc-grid{gap:6px}.kpi b{font-size:26px}
   .topbar .t span{display:none}
+  .who{width:100%}
+  .who .em{flex:1}
   .dlg-body{padding:4px 16px 16px}.dlg-foot{padding:12px 16px 16px}
   .dlg-foot .btn{flex:1}
   .row2{grid-template-columns:1fr}
@@ -293,7 +310,10 @@ tr:last-child td{border-bottom:0}
 <!-- Portada (sin sesión) -->
 <section id="hero" class="hero" aria-labelledby="h1">
   <div class="wrap">
-    <img id="heroImg" class="hero-img" alt="Family Fun Fest 2026. La huella de nuestra manada. Juega, descubre, comparte en familia." width="740" height="747">
+    <picture>
+      <source type="image/webp" srcset="hero-480.webp 480w, hero-740.webp 740w" sizes="(max-width: 880px) 92vw, 520px">
+      <img id="heroImg" class="hero-img" src="hero.jpg" alt="Family Fun Fest 2026. La huella de nuestra manada. Juega, descubre, comparte en familia." width="740" height="747" fetchpriority="high" decoding="async">
+    </picture>
     <div>
       <span class="eyebrow">Registro de asistentes</span>
       <h1 id="h1">Family Fun Fest 2026</h1>
@@ -315,7 +335,7 @@ tr:last-child td{border-bottom:0}
 <!-- Barra superior (con sesión) -->
 <header id="topbar" class="topbar" hidden>
   <div class="wrap">
-    <img id="thumb" class="thumb" alt="" width="56" height="56">
+    <img class="thumb" src="hero-480.webp" alt="" width="56" height="56" loading="lazy" decoding="async">
     <div class="t"><b id="evName">Family Fun Fest 2026</b><span>Registro de asistentes · Eight Academy</span></div>
     <div class="who"><span id="whoAv" class="av" aria-hidden="true"></span><span id="whoEm" class="em"></span><button id="logout" type="button">Salir</button></div>
   </div>
@@ -333,7 +353,14 @@ tr:last-child td{border-bottom:0}
   </div>
 </main>
 
-<div id="loading" class="wrap" style="padding-block:40px;text-align:center;color:var(--ink-2);font-weight:700" hidden>Cargando…</div>
+<section id="loading" class="wrap loader" hidden>
+  <div class="loader-card" role="status" aria-live="polite">
+    <span class="spinner" aria-hidden="true"></span>
+    <b id="loadMsg">Verificando tu cuenta…</b>
+    <small id="loadSub">Esto toma solo unos segundos.</small>
+    <button id="retry" class="btn btn-primary" type="button" hidden>Intentar de nuevo</button>
+  </div>
+</section>
 
 <footer class="footer"><div class="wrap">Eight Academy · Unidad Educativa — We are the change. · <a href="privacidad.html" style="color:inherit">Aviso de privacidad</a></div></footer>
 <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -348,6 +375,7 @@ const CFG = window.FFF_CONFIG || {};
 const DEMO = !CFG.API_URL || !CFG.GOOGLE_CLIENT_ID;
 const $ = (s, r=document) => r.querySelector(s);
 const GCOL = {3:'var(--g3)',4:'var(--g4)',5:'var(--g5)',6:'var(--g6)',7:'var(--g7)'};
+const gcol = g => GCOL[g] || 'var(--g6)';
 const GNAME = {3:'Tercero',4:'Cuarto',5:'Quinto',6:'Sexto',7:'Séptimo'};
 const ICON = {
   search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
@@ -360,12 +388,12 @@ const ICON = {
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>'
 };
 
-const S = { token:null, user:null, event:null, students:[], byId:{}, mine:[], grade:3, par:null, q:'', view:'family', admin:null, flow:null };
+const S = { token:null, user:null, event:null, students:[], byId:{}, mine:[], grade:3, par:null, q:'', admin:null, flow:null };
 
 /* ---------------- utilidades ---------------- */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tc = s => String(s).toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (m,a,b) => a + b.toUpperCase());
-const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const norm = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const course = s => `${s.g}.º EGB ${s.p}`;
 const initials = n => { const p = String(n).split(/\s+/); return ((p[2]||p[0]||'')[0]||'') + ((p[0]||'')[0]||''); };
 const fmtDT = iso => { try { return new Intl.DateTimeFormat('es-EC',{timeZone:'America/Guayaquil',weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}).format(new Date(iso)); } catch(e){ return iso; } };
@@ -392,39 +420,59 @@ async function api(action, payload = {}){
 function jwtPayload(t){ try { return JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))))); } catch(e){ return {}; } }
 function tokenSecondsLeft(){ if (DEMO) return 99999; const p = jwtPayload(S.token||''); return p.exp ? p.exp - Date.now()/1000 : 0; }
 
-function loadGis(){
-  return new Promise((ok, fail) => {
-    if (window.google && google.accounts && google.accounts.id) return ok();
-    const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.defer = true;
-    s.onload = ok; s.onerror = fail; document.head.appendChild(s);
+/* Google Identity Services: el script ya se descarga en paralelo desde <head>. */
+let gisPromise = null;
+function gisReady(){
+  if (gisPromise) return gisPromise;
+  gisPromise = new Promise((ok, fail) => {
+    const init = () => {
+      try {
+        google.accounts.id.initialize({ client_id: CFG.GOOGLE_CLIENT_ID, callback: onCredential, auto_select: false,
+          cancel_on_tap_outside: true, use_fedcm_for_prompt: true, ux_mode: 'popup' });
+        ok();
+      } catch (e) { fail(e); }
+    };
+    if (window.google && google.accounts && google.accounts.id) init();
+    else { window.__gisLoaded = init; setTimeout(() => fail(new Error('timeout')), 15000); }
+  });
+  gisPromise.catch(() => { gisPromise = null; });
+  return gisPromise;
+}
+function renderGoogleButton(el){
+  const w = Math.min(320, Math.max(220, el.parentElement.clientWidth || 300));
+  google.accounts.id.renderButton(el, { type:'standard', theme:'filled_blue', size:'large', shape:'pill', text:'signin_with', locale:'es', width: w });
+}
+function showLogin(errorMsg){
+  $('#loading').hidden = true; $('#topbar').hidden = true; $('#app').hidden = true; $('#hero').hidden = false;
+  if (errorMsg) $('#loginMsg').innerHTML = '<b style="color:var(--danger)">' + esc(errorMsg) + '</b>';
+  if (DEMO) return;
+  gisReady().then(() => renderGoogleButton($('#gbtn'))).catch(() => {
+    $('#loginMsg').textContent = 'No se pudo cargar el inicio de sesión de Google. Revisa tu conexión o desactiva bloqueadores de anuncios y recarga la página.';
   });
 }
 async function initAuth(){
-  $('#heroImg').src = CFG.HERO_SRC || 'hero.jpg';
-  $('#thumb').src = CFG.HERO_SRC || 'hero.jpg';
   if (DEMO && CFG.MODE === 'live'){
     $('#loginMsg').innerHTML = '<b>El registro estará disponible muy pronto.</b> Vuelve a ingresar en unos minutos.';
     return;
   }
   if (DEMO){
+    await loadScript('demo.js');
+    Demo = window.createFFFDemo({ appError, tc, norm });
     $('#demoBar').hidden = false; $('#demoLogin').hidden = false;
     $('#demoLogin').onclick = () => { S.token = 'demo'; boot(); };
     $('#demoReset').onclick = () => { Demo.reset(); location.reload(); };
     return;
   }
   const saved = store.get('fff-session');
-  if (saved && saved.token){ S.token = saved.token; if (tokenSecondsLeft() > 120) return boot(); store.del('fff-session'); S.token = null; }
-  try {
-    await loadGis();
-    google.accounts.id.initialize({ client_id: CFG.GOOGLE_CLIENT_ID, callback: onCredential, auto_select: false, cancel_on_tap_outside: true, use_fedcm_for_prompt: true, ux_mode: 'popup' });
-    renderGoogleButton($('#gbtn'));
-  } catch (e) {
-    $('#loginMsg').textContent = 'No se pudo cargar el inicio de sesión de Google. Revisa tu conexión o desactiva bloqueadores de anuncios y recarga la página.';
+  if (saved && saved.token){
+    S.token = saved.token;
+    if (tokenSecondsLeft() > 120){ boot(); gisReady().catch(() => {}); return; }
+    store.del('fff-session'); S.token = null;
   }
+  showLogin();
 }
-function renderGoogleButton(el){
-  const w = Math.min(320, Math.max(220, el.parentElement.clientWidth || 300));
-  google.accounts.id.renderButton(el, { type:'standard', theme:'filled_blue', size:'large', shape:'pill', text:'signin_with', locale:'es', width: w });
+function loadScript(src){
+  return new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.appendChild(s); });
 }
 function onCredential(resp){ S.token = resp.credential; store.set('fff-session', { token: resp.credential }); boot(); }
 function logout(){
@@ -434,23 +482,46 @@ function logout(){
 }
 
 /* ---------------- arranque ---------------- */
+let bootRun = 0; // cada intento invalida a los anteriores (evita respuestas cruzadas al reintentar)
 async function boot(){
-  $('#hero').hidden = true; $('#loading').hidden = false;
+  const run = ++bootRun;
+  // Respuesta inmediata: barra con el correo (leído del token) y un cargador con mensajes claros.
+  $('#hero').hidden = true; $('#app').hidden = true; $('#loading').hidden = false;
+  $('#retry').hidden = true; $('#loading .spinner').hidden = false;
+  const p = DEMO ? {} : jwtPayload(S.token || '');
+  if (p.email){ $('#whoEm').textContent = p.email; $('#whoAv').textContent = p.email[0].toUpperCase(); $('#topbar').hidden = false; }
+  $('#loadMsg').textContent = 'Verificando tu cuenta…';
+  $('#loadSub').textContent = 'Esto toma solo unos segundos.';
+  const timers = [
+    setTimeout(() => { $('#loadMsg').textContent = 'Cargando la lista de estudiantes…'; }, 1200),
+    setTimeout(() => { $('#loadSub').textContent = 'La conexión está un poco lenta. Seguimos cargando, no cierres la página.'; }, 7000),
+    setTimeout(() => { $('#loadSub').textContent = 'Está tardando más de lo normal. Puedes esperar o intentar de nuevo.'; $('#retry').hidden = false; }, 20000)
+  ];
+  $('#retry').onclick = () => { timers.forEach(clearTimeout); boot(); };
   try {
-    const d = await api('bootstrap');
+    let d;
+    try { d = await api('bootstrap'); }
+    catch (e) { if (e.code !== 'NET') throw e; await new Promise(r => setTimeout(r, 1500)); d = await api('bootstrap'); }
+    if (run !== bootRun) return;
     applyBootstrap(d);
     $('#loading').hidden = true; $('#topbar').hidden = false; $('#app').hidden = false;
     renderAll();
   } catch (e) {
-    $('#loading').hidden = true; $('#hero').hidden = false;
-    if (e.code === 'AUTH'){ store.del('fff-session'); S.token = null; }
-    $('#loginMsg').innerHTML = '<b style="color:var(--danger)">' + esc(e.message) + '</b>';
-    if (!DEMO && e.code === 'AUTH' && window.google && google.accounts) renderGoogleButton($('#gbtn'));
+    if (run !== bootRun) return;
+    if (e.code === 'AUTH'){ store.del('fff-session'); S.token = null; showLogin(e.message); }
+    else {
+      $('#loadMsg').textContent = 'No pudimos cargar el registro';
+      $('#loadSub').textContent = e.message;
+      $('#retry').hidden = false;
+      $('#loading .spinner').hidden = true;
+    }
+  } finally {
+    timers.forEach(clearTimeout);
   }
 }
 function applyBootstrap(d){
   S.user = d.user; S.event = d.event; S.students = d.students; S.mine = d.mine || [];
-  S.byId = {}; d.students.forEach(s => S.byId[s.id] = s);
+  S.byId = {}; d.students.forEach(s => { S.byId[s.id] = s; s.k = norm(s.n); });
   if (!S.par) S.par = parsOf(S.grade)[0];
 }
 async function refresh(){ applyBootstrap(await api('bootstrap')); renderAll(); }
@@ -470,7 +541,6 @@ function renderAll(){
   renderStatus(); renderFamily();
 }
 function switchView(v){
-  S.view = v;
   $('#tabFamily').setAttribute('aria-selected', v === 'family');
   $('#tabAdmin').setAttribute('aria-selected', v === 'admin');
   $('#familyView').hidden = v !== 'family'; $('#adminView').hidden = v !== 'admin';
@@ -518,20 +588,17 @@ function renderFilters(){
   if (S.q.trim().length >= 2){ f.innerHTML = ''; return; }
   const grades = [...new Set(S.students.map(s => s.g))].sort((a,b) => a-b);
   f.innerHTML = `<div style="display:grid;gap:8px"><span class="lbl" id="lg">Grado</span>
-    <div class="grades" role="group" aria-labelledby="lg">${grades.map(g => `<button type="button" class="grade" data-g="${g}" aria-pressed="${g===S.grade}"><span class="num" style="background:${GCOL[g]||'var(--g6)'}">${g}.º</span>${GNAME[g]||g}<small>EGB</small></button>`).join('')}</div></div>
+    <div class="grades" role="group" aria-labelledby="lg">${grades.map(g => `<button type="button" class="grade" data-g="${g}" aria-pressed="${g===S.grade}"><span class="num" style="background:${gcol(g)}">${g}.º</span>${GNAME[g]||g}<small>EGB</small></button>`).join('')}</div></div>
     <div style="display:grid;gap:8px"><span class="lbl" id="lp">Paralelo</span>
     <div class="pars" role="group" aria-labelledby="lp">${parsOf(S.grade).map(p => `<button type="button" class="par" data-p="${p}" aria-pressed="${p===S.par}">${p}</button>`).join('')}</div></div>`;
   f.querySelectorAll('.grade').forEach(b => b.onclick = () => { S.grade = +b.dataset.g; S.par = parsOf(S.grade)[0]; renderFilters(); renderList(); });
   f.querySelectorAll('.par').forEach(b => b.onclick = () => { S.par = b.dataset.p; renderFilters(); renderList(); });
 }
 function stuButton(s, opts = {}){
-  const showCourse = opts.showCourse;
-  const taken = s.r || opts.disabled;
-  const label = opts.disabledLabel || 'Registrado';
-  return `<button type="button" class="stu" data-id="${esc(s.id)}" ${taken ? 'disabled' : ''} aria-label="${esc(tc(s.n))}, ${esc(course(s))}, ${taken ? label : 'disponible'}">
-    <span class="ini" style="background:${GCOL[s.g]}">${esc(initials(s.n))}</span>
-    <span class="nm">${esc(tc(s.n))}${showCourse ? `<small>${esc(course(s))}</small>` : ''}</span>
-    ${taken ? `<span class="pill lock">${label}</span>` : (opts.free === false ? '' : '<span class="pill free">Disponible</span>')}</button>`;
+  return `<button type="button" class="stu" data-id="${esc(s.id)}" ${s.r ? 'disabled' : ''} aria-label="${esc(tc(s.n))}, ${esc(course(s))}, ${s.r ? 'registrado' : 'disponible'}">
+    <span class="ini" style="background:${gcol(s.g)}">${esc(initials(s.n))}</span>
+    <span class="nm">${esc(tc(s.n))}${opts.showCourse ? `<small>${esc(course(s))}</small>` : ''}</span>
+    ${s.r ? '<span class="pill lock">Registrado</span>' : (opts.free === false ? '' : '<span class="pill free">Disponible</span>')}</button>`;
 }
 function renderList(){
   const L = $('#list'); if (!L) return;
@@ -539,7 +606,7 @@ function renderList(){
   let items, title, meta;
   if (q.length >= 2){
     const terms = q.split(/\s+/);
-    items = S.students.filter(s => { const n = norm(s.n); return terms.every(t => n.includes(t)); });
+    items = S.students.filter(s => terms.every(t => s.k.includes(t)));
     title = 'Resultados de búsqueda'; meta = `${items.length} ${items.length === 1 ? 'estudiante' : 'estudiantes'}`;
   } else {
     items = S.students.filter(s => s.g === S.grade && s.p === S.par);
@@ -577,7 +644,7 @@ function renderFlow(){
   const F = S.flow, ev = S.event, max = ev.maxTotal || 4;
   const prog = [1,2,3,4].map(i => `<i class="${i <= Math.min(F.step,4) ? 'on' : ''}"></i>`).join('');
   const head = `<div class="dlg-head"><div class="prog" aria-hidden="true">${F.step < 5 ? prog : ''}</div><button class="x" type="button" id="dx" aria-label="Cerrar" ${F.busy ? 'disabled' : ''}>×</button></div>`;
-  const chosen = s => `<div class="chosen stu" style="border:0;cursor:default"><span class="ini" style="background:${GCOL[s.g]}">${esc(initials(s.n))}</span><div><span class="nm">${esc(tc(s.n))}</span><small>${esc(course(s))}</small></div></div>`;
+  const chosen = s => `<div class="chosen stu" style="border:0;cursor:default"><span class="ini" style="background:${gcol(s.g)}">${esc(initials(s.n))}</span><div><span class="nm">${esc(tc(s.n))}</span><small>${esc(course(s))}</small></div></div>`;
   const err = F.err ? `<div class="notice err" role="alert"><span class="dot"></span><div>${esc(F.err)}</div></div>` : '';
   let body = '', foot = '';
 
@@ -910,77 +977,8 @@ async function downloadReport(){
   finally { btn.disabled = false; }
 }
 
-/* ---------------- MODO DEMOSTRACIÓN (datos ficticios, solo en este navegador) ---------------- */
-const Demo = (() => {
-  const KEY = 'fff-demo-v2';
-  const L = { get(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }, set(v){ try { localStorage.setItem(KEY, JSON.stringify(v)); } catch(e){} }, del(){ try { localStorage.removeItem(KEY); } catch(e){} } };
-  const ME = { email:'familia.demo@gmail.com', name:'Familia Demo', picture:'', isAdmin:true };
-  function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-  function seed(){
-    const r = rng(2026), pick = a => a[Math.floor(r() * a.length)];
-    const SUR = ['ANDRADE','BENÍTEZ','CALERO','DÁVILA','ESPINOZA','FIGUEROA','GARCÉS','HIDALGO','IZURIETA','JARAMILLO','LARREA','MALDONADO','NARVÁEZ','OLMEDO','PAREDES','QUIROLA','ROSERO','SALAZAR','TAPIA','URRESTA','VALLEJO','YÉPEZ','ZAMBRANO','CORDERO','MONCAYO','TERÁN','PROAÑO','VILLACÍS'];
-    const NAMES = [['VALENTINA','EMILIA','ISABELLA','CAMILA','RENATA','AMELIA','MARTINA','SOFÍA','LUCÍA','ANTONELLA','PAULA','JULIETA','DOMÉNICA','VICTORIA'],
-                   ['MATEO','SANTIAGO','SEBASTIÁN','NICOLÁS','JOAQUÍN','TOMÁS','GAEL','BENJAMÍN','DAVID','ESTEBAN','ALEJANDRO','MARTÍN','SAMUEL','ANDRÉS']];
-    const PARS = [[3,'A',19],[3,'B',19],[4,'A',20],[4,'B',20],[4,'C',20],[5,'A',19],[5,'B',19],[5,'C',17],[6,'A',23],[6,'B',26],[7,'A',21],[7,'B',21],[7,'C',22]];
-    const students = [];
-    // Pares de apellidos únicos y luego 16 grupos de hermanos (mismos dos apellidos en otro curso).
-    const pairs = new Set(), given = () => { const NAM = NAMES[r() < .5 ? 0 : 1]; const a = pick(NAM); let b = pick(NAM); while (b === a) b = pick(NAM); return a + ' ' + b; };
-    const plan = PARS.map(([g,p,n]) => { const list = []; while (list.length < n){ const sp = pick(SUR) + ' ' + pick(SUR); if (pairs.has(sp)) continue; pairs.add(sp); list.push(sp + ' ' + given()); } return { g, p, list }; });
-    for (let k = 0; k < 16; k++){ const A = pick(plan), B = pick(plan); if (A === B) continue; const ia = Math.floor(r() * A.list.length), ib = Math.floor(r() * B.list.length);
-      const sur = A.list[ia].split(' ').slice(0,2).join(' '); B.list[ib] = sur + ' ' + given(); }
-    plan.forEach(({g,p,list}) => [...new Set(list)].sort((a,b) => a.localeCompare(b,'es')).forEach((nm,i) => students.push({ id:`${g}${p}-${String(i+1).padStart(2,'0')}`, g, p, n:nm, ced:'17' + String(Math.floor(r()*1e8)).padStart(8,'0') })));
-    const families = autoFamilies(students);
-    const fam = {}; families.forEach(f => f.ids.forEach(id => fam[id] = f));
-    const regs = []; const used = new Set();
-    for (let i = 0; i < 70; i++){
-      const s = students[Math.floor(r() * students.length)]; if (used.has(s.id)) continue;
-      const ids = fam[s.id] ? fam[s.id].ids.slice() : [s.id]; if (ids.some(id => used.has(id))) continue; ids.forEach(id => used.add(id));
-      const total = Math.min(4, ids.length + 1 + Math.floor(r() * 3));
-      regs.push(mkReg(ids, total, `familia${i + 1}@gmail.com`, students, new Date(Date.now() - (70 - i) * 3600e3 * 2)));
-    }
-    return { students, regs, families, open:true, deadline:'2026-10-21 13:00' };
-  }
-  function autoFamilies(students){
-    const g = {}; students.forEach(s => { const t = norm(s.n).toUpperCase().split(/\s+/); if (t.length >= 3) (g[t[0] + ' ' + t[1]] = g[t[0] + ' ' + t[1]] || []).push(s.id); });
-    return Object.keys(g).sort().filter(k => g[k].length > 1).map((k,i) => ({ id:'FAM-' + String(i+1).padStart(2,'0'), ids:g[k], status:'CONFIRMADA', origin:'AUTO · mismos dos apellidos', note:'' }));
-  }
-  function mkReg(ids, total, email, students, date){
-    const st = ids.map(id => students.find(s => s.id === id));
-    return { code:`FFF-${st[0].g}${st[0].p}-${Math.random().toString(36).slice(2,6).toUpperCase()}`, date:(date || new Date()).toISOString(), email, account:email.split('@')[0],
-      ids, names: st.map(s => s.n), courses: st.map(s => `${s.g}.º EGB ${s.p}`), total, companions: total - ids.length, status:'ACTIVO', mail: 'ENVIADO', note:'', sibs: ids.length > 1 ? 'NÓMINA' : '' };
-  }
-  let db = null;
-  const load = () => { if (!db) db = L.get() || seed(); return db; };
-  const save = () => L.set(db);
-  const taken = () => { const m = {}; db.regs.forEach(r => { if (r.status === 'ACTIVO') r.ids.forEach(id => m[id] = r.code); }); return m; };
-  const deadlineDate = s => s ? new Date(s.replace(' ', 'T') + ':00-05:00') : null;
-  const event = () => { const d = deadlineDate(db.deadline); return { name:'Family Fun Fest 2026', open: db.open && !(d && new Date() >= d), manualOpen: db.open, closesAt: d ? d.toISOString() : '', maxTotal:4, minCompanions:0, maxPerAccount:1, contact:'coordinacion@colegio.edu.ec' }; };
-  const pub = r => ({ code:r.code, ids:r.ids, date:r.date, students:r.names.map((n,i) => ({ name:n, course:r.courses[i] })), total:r.total, companions:r.companions });
-  const wait = ms => new Promise(r => setTimeout(r, ms));
-  async function call(action, p){
-    load(); await wait(action === 'register' ? 700 : 250);
-    const t = taken();
-    const fam = {}; db.families.filter(f => f.status === 'CONFIRMADA').forEach(f => f.ids.forEach(id => fam[id] = f));
-    if (action === 'bootstrap') return { user: ME, event: event(), students: db.students.map(s => { const o = { id:s.id, g:s.g, p:s.p, n:s.n, r: !!t[s.id] || !!(fam[s.id] && fam[s.id].ids.some(id => t[id])) }; if (fam[s.id]) o.f = fam[s.id].id; return o; }), mine: db.regs.filter(r => r.status === 'ACTIVO' && r.email === ME.email).map(pub) };
-    if (action === 'register'){
-      if (!event().open) throw appError('CLOSED','El registro está cerrado.');
-      if (db.regs.some(r => r.status === 'ACTIVO' && r.email === ME.email)) throw appError('LIMIT','Esta cuenta ya realizó su registro.');
-      const ids = p.studentIds; if (!ids.length || ids.length > 4 || p.total < ids.length || p.total > 4) throw appError('VALIDATION','Datos no válidos.');
-      const tk = ids.filter(id => t[id]); if (tk.length) throw appError('TAKEN','Ya existe un registro para: ' + tk.map(id => tc(db.students.find(s => s.id === id).n)).join(', ') + '.');
-      const miss = [...new Set(ids.flatMap(id => fam[id] ? fam[id].ids : []))].filter(id => !ids.includes(id));
-      if (miss.length) throw appError('FAMILY','Según la nómina del colegio, ' + miss.map(id => tc(db.students.find(s => s.id === id).n)).join(', ') + ' debe registrarse en este mismo registro porque es hermano o hermana.');
-      const reg = mkReg(ids, p.total, ME.email, db.students); db.regs.push(reg); save();
-      return { registration: pub(reg), emailStatus:'ENVIADO' };
-    }
-    if (action === 'admin.data') return { event: event(), config: { REGISTRO_ABIERTO: db.open ? 'SI' : 'NO', FECHA_CIERRE: db.deadline, ADMIN_EMAILS:[ME.email] },
-      students: db.students.map(s => ({ id:s.id, g:s.g, p:s.p, n:s.n, ced:s.ced, code:t[s.id] || '' })), registrations: db.regs, families: db.families, mailQuota: 1500 };
-    if (action === 'admin.config'){ if (typeof p.open === 'boolean') db.open = p.open; if (typeof p.deadline === 'string') db.deadline = p.deadline.replace('T',' '); save(); return { event: event() }; }
-    if (action === 'admin.annul'){ if ((p.reason || '').trim().length < 3) throw appError('VALIDATION','Escribe el motivo de la anulación.'); const r = db.regs.find(x => x.code === p.code); r.status = 'ANULADO'; r.note = 'Anulado (demo): ' + p.reason; save(); return { code:p.code }; }
-    if (action === 'admin.resend') return { sent: 0 };
-    throw appError('BAD_REQUEST','Acción no reconocida.');
-  }
-  return { call, reset(){ L.del(); db = null; } };
-})();
+/* Modo demostración: su código vive en demo.js y solo se descarga si faltan API_URL y GOOGLE_CLIENT_ID. */
+let Demo = null;
 
 initAuth();
 })();
